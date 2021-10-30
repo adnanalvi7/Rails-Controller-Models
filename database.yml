@@ -1,0 +1,91 @@
+# PSQL database.yml; update with local settings and rename to database.yml to run locally
+# default: &default
+#   adapter: postgresql
+#   encoding: unicode
+#   username: carserv_dev
+#   password: postgres
+#   host: localhost
+#   prepared_statements: false
+#   url: <%= ENV['DATABASE_CONNECTION_POOL_URL'] || ENV['DATABASE_URL'] %>
+#   pool: <%= ENV["DB_POOL"] || ENV['RAILS_MAX_THREADS'] || 5 %>
+
+# catalogs_default: &catalogs_default
+#   adapter: postgresql
+#   encoding: unicode
+#   username: carserv_dev
+#   password: postgres
+#   host: localhost
+#   prepared_statements: false
+#   url: <%= ENV['CATALOGS_DATABASE_CONNECTION_POOL_URL'] || ENV['CATALOGS_DATABASE_URL'] %>
+#   pool: <%= ENV["DB_POOL"] || ENV['RAILS_MAX_THREADS'] || 5 %>
+#   migrations_paths: db/catalogs_migrate
+
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  username: <%= ENV['POSTGRESQL_USER_NAME'] || 'postgres' %>
+  password: <%= ENV['POSTGRESQL_PASSWORD'] || 'postgres' %>
+  host: <%= ENV['POSTGRESQL_HOST'] || 'localhost' %>
+  prepared_statements: false
+  pool: <%= ENV["DB_POOL"] || ENV['RAILS_MAX_THREADS'] || 5 %>
+  database: <%= ENV['POSTGRESQL_DB'] || 'preview_jun9' %>
+  variables:
+    statement_timeout: <%= ENV["STATEMENT_TIMEOUT"] || "10s" %>
+  
+catalogs_default: &catalogs_default
+  adapter: postgresql
+  encoding: unicode
+  username: <%= ENV['POSTGRESQL_USER_NAME'] || 'postgres' %>
+  password: <%= ENV['POSTGRESQL_PASSWORD'] || 'postgres' %>
+  host: <%= ENV['POSTGRESQL_HOST'] || 'localhost' %>
+  prepared_statements: false
+  pool: <%= ENV["DB_POOL"] || ENV['RAILS_MAX_THREADS'] || 5 %>
+  database: <%= ENV['POSTGRESQL_DB_CATALOG'] || 'catalogs_dev' %>
+  migrations_paths: db/catalogs_migrate
+
+development:
+  primary: 
+    <<: *default
+    pool: 10
+  catalogs:
+    <<: *catalogs_default
+
+staging:
+  primary: 
+    <<: *default
+  catalogs:
+    <<: *catalogs_default
+
+preview:
+  primary: 
+    <<: *default
+  catalogs:
+    <<: *catalogs_default
+
+training:
+  primary: 
+    <<: *default
+  catalogs:
+    <<: *catalogs_default
+
+production:
+  primary: 
+    <<: *default
+  catalogs:
+    <<: *catalogs_default
+
+
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test:
+  primary: 
+    <<: *default
+    database: carserv_test
+    pool: 10
+  catalogs:
+    <<: *catalogs_default
+    url: <%= ENV['CATALOGS_DATABASE_URL'] || nil %>
+    username: <%= ENV['CATALOGS_DATABASE_USER'] || 'carserv_dev' %>
+    database: catalogs_test
